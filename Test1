@@ -1,0 +1,39 @@
+static void Postfix(ref Quest[] ___quests, ref QuestInstance[] ___questInstances)
+        {
+            GLAPModLoader.DebugShowMessage("we're in it to win it");
+
+            List<Quest> _quests = new List<Quest>(___quests);
+            Quest q = new Quest();
+
+            Traverse.Create(q).Field("questName").SetValue("Archipelago Quest");
+            Traverse.Create(q).Field("attributes").SetValue(QuestAttributes.AutoGiven);
+
+            List<QuestStage> _stage = new List<QuestStage>();
+            QuestStage s = new QuestStage();
+            Traverse.Create(s).Field("stageName").SetValue("Test Stage1");
+            Traverse.Create(s).Field("rewards").SetValue(new QuestReward[0]);
+
+            List<QuestRequirement> _requirements = new List<QuestRequirement>();
+            QuestRequirement r = new QuestRequirement();
+            Traverse.Create(r).Field("requirementType").SetValue(QuestRequirementType.Location);
+            Traverse.Create(r).Field("location").SetValue(MapManager.instance.DefaultTown);
+            Traverse.Create(r).Field("value").SetValue("");
+            _requirements.Add(r);
+
+            Traverse.Create(s).Field("requirements").SetValue(_requirements.ToArray());
+            Traverse.Create(s).Field("rewards").SetValue(new QuestReward[0]);
+            Traverse.Create(s).Field("achievement").SetValue(AchievementType.None);
+
+            _stage.Add(s);
+
+            Traverse.Create(q).Field("stages").SetValue(_stage.ToArray());
+
+            _quests.Add(q);
+            GLAPModLoader.DebugShowMessage("changed quests from count "+___quests.Length+" to "+_quests.Count);
+            ___quests = _quests.ToArray();
+            var newCount = ((Quest[])Traverse.Create(QuestManager.instance).Field("quests").GetValue()).Length;
+            GLAPModLoader.DebugShowMessage("new quest count is 14? " + newCount);
+            ___questInstances = (from c in ___quests
+                                 select c.MakeInstance()).ToArray<QuestInstance>();
+
+        }
